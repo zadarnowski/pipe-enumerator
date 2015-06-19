@@ -1,0 +1,33 @@
+name:           pipe-enumerator
+version:        0.1.0.0
+synopsis:       Pipes/iteratees bridge library
+homepage:       https://github.com/zadarnowski/pipe-enumerator
+category:       Database
+stability:      alpha
+
+author:         Patryk Zadarnowski
+maintainer:     Patryk Zadarnowski <pat@jantar.org>
+
+copyright:      Copyright (c) 2015 Patryk Zadarnowski
+
+description:
+
+    This library provides a bridge between pipe-based and iteratee-based programs.
+
+cabal-version:  >= 1.18
+build-type:     Simple
+license:        BSD3
+license-file:   LICENSE
+
+library
+  hs-source-dirs:   src
+  default-language: Haskell2010
+  ghc-options:      -Wall -Werror -fno-warn-unused-do-bind -fno-warn-unused-binds
+
+  exposed-modules:
+    Pipes.Enumerator
+
+  build-depends:
+    base                    >= 4.8 && < 5,
+    enumerator              >= 0.4.20,
+    pipes                   >= 4.1.5
