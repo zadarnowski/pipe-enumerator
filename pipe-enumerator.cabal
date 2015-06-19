@@ -30,4 +30,5 @@ library
   build-depends:
     base                    >= 4.8 && < 5,
     enumerator              >= 0.4.20,
-    pipes                   >= 4.1.5
+    pipes                   >= 4.1.5,
+    transformers            >= 0.4.2.0

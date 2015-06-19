@@ -2,6 +2,7 @@
 >   pipeToEnumerator
 > ) where
 
+> import Control.Monad.Trans.Class
 > import qualified Pipes.Internal as P
 > import qualified Data.Enumerator as E
 
@@ -56,9 +57,9 @@
 > drainPipeWithChunks s pk (c:cs)           = drainPipe cs s (pk (Just c))
 > drainPipeWithChunks s pk []               = E.continue (drainPipeWithStream s pk)
 
-> drainPipeWithStream :: Monad m => E.Step b m r -> (Maybe a -> P.Proxy a' (Maybe a) () b m q) -> Stream a -> E.Iteratee a m (q, r)
+> drainPipeWithStream :: Monad m => E.Step b m r -> (Maybe a -> P.Proxy a' (Maybe a) () b m q) -> E.Stream a -> E.Iteratee a m (q, r)
 > drainPipeWithStream s pk (E.Chunks cs)    = drainPipeWithChunks s pk cs
-> drainPipeWithStream s pk (E.EOF)          = drainPipeWithEOF ik pk
+> drainPipeWithStream s pk (E.EOF)          = drainPipeWithEOF s pk
 
 
   State Machine 2
@@ -66,7 +67,7 @@
 
 > advanceIteratee' :: Monad m => P.Proxy a' (Maybe a) () b m q -> E.Step b m r -> E.Iteratee a m (q, r)
 > advanceIteratee' p (E.Continue ik)        = advancePipe' ik p
-> advanceIteratee' p s                      = drainPipe' p s
+> advanceIteratee' p s                      = drainPipe' s p
 
 > advancePipe' :: Monad m => (E.Stream b -> E.Iteratee b m r) -> P.Proxy a' (Maybe a) () b m q -> E.Iteratee a m (q, r)
 > advancePipe' ik (P.Request _ pk)          = advancePipeWithEOF ik pk
@@ -84,16 +85,16 @@
 > drainPipe' s (P.Pure q)                   = finish q (E.EOF) s
 
 > drainPipeWithEOF :: Monad m => E.Step b m r -> (Maybe a -> P.Proxy a' (Maybe a) () b m q) -> E.Iteratee a m (q, r)
-> drainPipeWithEOF s pk                     = drainPipe' ik (pk Nothing)
+> drainPipeWithEOF s pk                     = drainPipe' s (pk Nothing)
 
 
   Final Step
   ==========
 
 > finish :: Monad m => q -> E.Stream a -> E.Step b m r -> E.Iteratee a m (q, r)
-> finish q xs (E.Continue _)                = error "divergent iteratee" -- iteratees aren't allowed to continue on EOF
 > finish q xs (E.Yield r _)                 = E.yield (q, r) xs
 > finish _ _  (E.Error e)                   = E.throwError e
+> finish _ _  (E.Continue _)                = error "divergent iteratee" -- iteratees aren't allowed to continue on EOF
 
 
   Data Type Reference
