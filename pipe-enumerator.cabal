@@ -1,6 +1,6 @@
 name:           pipe-enumerator
-version:        0.1.0.0
-synopsis:       Pipes/iteratees bridge library
+version:        0.2.0.0
+synopsis:       A bidirectional bridge between pipes and iteratees
 homepage:       https://github.com/zadarnowski/pipe-enumerator
 category:       Control, Pipes
 stability:      alpha
@@ -12,7 +12,15 @@ copyright:      Copyright (c) 2015 Patryk Zadarnowski
 
 description:
 
-    This library provides a bridge between pipe-based and iteratee-based programs.
+    This library defines a set of functions that convert between
+    the "Pipes" and "Data.Enumerator" paradigms. The conversion
+    is bidirectional: an appropriately-typed pipe can be converted
+    into an 'E.Iteratee' and back into a pipe. In addition, a pipe
+    can be fed into an iteratee (or, more specifically, 'E.Step'),
+    resulting in an 'E.Enumerator'.
+
+    The library has been designed specifically for use with "Snap",
+    but I'm sure that many other interesting uses of it exist.
 
 cabal-version:  >= 1.18
 build-type:     Simple
@@ -26,7 +34,7 @@ source-repository head
 source-repository this
   type:         git
   location:     https://github.com/zadarnowski/pipe-enumerator.git
-  tag:          0.1.0.0
+  tag:          0.2.0.0
 
 library
   hs-source-dirs:   src
