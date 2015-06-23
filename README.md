@@ -1,5 +1,5 @@
- A bidirectional bridge between pipes and iteratees
-===================================================
+Pipes/Iteratees Bridge
+======================
 
     Copyright © 2015 Patryk Zadarnowski «pat@jantar.org».
     All rights reserved.
