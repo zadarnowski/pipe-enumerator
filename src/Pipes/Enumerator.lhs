@@ -100,15 +100,27 @@
 >   convert5 (P.Pure r)             = E.yield r E.EOF
 
 > -- | Feed the output of a 'P.Pipe' to a 'E.Step', effectively converting it into
-> --   an 'E.Enumerator',  generalised slightly to allow distinct input and output
-> --   types.  The chunks of the input stream are fed into the pipe one element at
-> --   the time, and the pipe's  output is fed to the iteratee one element per chunk.
+> --   an 'E.Enumerator', generalised slightly to allow distinct input and output
+> --   types. The chunks of the input stream are fed into the pipe one element at
+> --   the time, and the pipe's output is fed to the iteratee one element per chunk.
 > --   Once the input reaches 'E.EOF', the pipe is fed an infinite stream of 'Nothing'
-> --   until it ends with  a pure value. In effect, both the pipe and the iteratee are
-> --   always consumed fully, with the resulting enumerator returning the results of both
-> --   combined into a single value using the specified monadic function.
-> pipeToEnumerator :: Monad m => (r1 -> r2 -> m r) -> P.Proxy a' (Maybe a) () b m r1 -> E.Step b m r2 -> E.Iteratee a m r
-> pipeToEnumerator f = advanceIteratee []
+> --   until it ends with  a pure value, which is discarded. In effect, both the pipe
+> --   and the iteratee are always consumed fully.
+> pipeToEnumerator :: Monad m => P.Proxy a' (Maybe a) () b m r' -> E.Step b m r -> E.Iteratee a m r
+> pipeToEnumerator = pipeToEnumerator' (curry (return . snd))
+
+> -- | Feed the output of a 'P.Pipe' to a 'E.Step', effectively converting it into
+> --   an 'E.Enumerator', generalised to allow distinct input and output types
+> --   and a custom monadic function for merging of the pipe's and step's results
+> --   into a single result of the constructed iteratee. The chunks of the input
+> --   stream are fed into the pipe one element at the time, and the pipe's output
+> --   is fed to the iteratee one element per chunk.  Once the input reaches 'E.EOF',
+> --   the pipe is fed an infinite stream of 'Nothing' until it ends with  a pure value,
+> --   which is combined with the step's result using the supplied monadic function @f@.
+> --   In effect, both the pipe and the iteratee are always consumed fully, with the
+> --   resulting iteratee returning the results of both transformers.
+> pipeToEnumerator' :: Monad m => (r1 -> r2 -> m r) -> P.Proxy a' (Maybe a) () b m r1 -> E.Step b m r2 -> E.Iteratee a m r
+> pipeToEnumerator' f = advanceIteratee []
 >  where
 
 >   advanceIteratee cs p (E.Continue ik)      = advancePipe cs ik p
@@ -156,4 +168,3 @@
 >   finish r1 xs (E.Yield r2 _)                = lift (f r1 r2) >>= flip E.yield xs
 >   finish _  _  (E.Error e)                   = E.throwError e
 >   finish _  _  (E.Continue _)                = error "divergent iteratee" -- iteratees aren't allowed to continue on EOF
-

@@ -1,5 +1,5 @@
 name:           pipe-enumerator
-version:        0.2.0.0
+version:        0.3.0.0
 synopsis:       A bidirectional bridge between pipes and iteratees
 homepage:       https://github.com/zadarnowski/pipe-enumerator
 category:       Control, Pipes
@@ -34,7 +34,7 @@ source-repository head
 source-repository this
   type:         git
   location:     https://github.com/zadarnowski/pipe-enumerator.git
-  tag:          0.2.0.0
+  tag:          0.3.0.0
 
 library
   hs-source-dirs:   src
