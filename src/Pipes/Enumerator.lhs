@@ -13,14 +13,14 @@
 > -- can be fed into an iteratee (or, more specifically, 'E.Step'),
 > -- resulting in an 'E.Enumerator'.
 > --
-> -- The library has been designed specifically for use with "Snap",
+> -- The library has been designed specifically for use with Snap,
 > -- but I'm sure that many other interesting uses of it exist.
 
 > module Pipes.Enumerator (
 >   fromStream, toStream, toSingletonStream,
 >   iterateeToPipe, stepToPipe,
 >   pipeToIteratee,
->   pipeToEnumerator
+>   pipeToEnumerator, pipeToEnumerator'
 > ) where
 
 > import Control.Exception (SomeException)
